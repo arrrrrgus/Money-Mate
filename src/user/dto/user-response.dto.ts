@@ -2,8 +2,8 @@ export class UserResponseDto {
   id: string;
   username: string;
   email: string;
-  firsName: string;
+  firstName: string;
   lastName: string;
   role: string;
-  createAt: Date;
+  createdAt: Date;
 }
