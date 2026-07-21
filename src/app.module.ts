@@ -6,6 +6,7 @@ import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
     AuthModule,
     UserModule,
     DatabaseModule,
+    CategoryModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: AuthGuard }, UserService],
 })
