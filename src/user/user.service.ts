@@ -1,6 +1,7 @@
 import { PrismaService } from '@/database/prisma.service';
 import { BcryptService } from '@/infrastructure/hash/bcrypt.service';
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -11,6 +12,7 @@ import {
   PrismaClientKnownRequestError,
   UserGetPayload,
 } from '@/database/generated/prisma/internal/prismaNamespace';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class UserService {
@@ -63,5 +65,27 @@ export class UserService {
 
   async getProFile(userId: string) {
     return this.getUserById(userId);
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const isPasswordValid = await this.bcryptService.compare(
+      dto.oldPassword,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw new BadRequestException('The old password is incorrect');
+    }
+    const newHashedPassword = await this.bcryptService.hash(dto.newPassword);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: newHashedPassword },
+    });
+    return { message: 'Password updated successfully' };
   }
 }
