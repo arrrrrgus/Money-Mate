@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/database/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id                String          @id @default(uuid())
+  username          String          @unique
+  email             String          @unique
+  password          String
+  firstName         String          @map("first_name")
+  lastName          String          @map("last_name")
+  role              Role            @default(USER)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  deletedAt         DateTime?       @map("deleted_at")
+  transactions      Transaction[]
+  savings           Saving[]
+  supportTickets    SupportTicket[]
+  createdCategories Category[]      @relation("UserCategories")
+
+  @@map("users")
+}
+
+enum Type {
+  INCOME
+  EXPENSE
+}
+
+model Category {
+  id              Int           @id @default(autoincrement())
+  name            String
+  type            Type
+  createdAt       DateTime      @default(now()) @map("created_at")
+  isSystemCore    Boolean       @default(false) @map("is_system_core")
+  createdByUserId String?       @map("created_by_user_id")
+  createdByUser   User?         @relation("UserCategories", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  transactions    Transaction[]
+
+  @@map("categories")
+}
+
+model Transaction {
+  id              Int       @id @default(autoincrement())
+  userId          String    @map("user_id")
+  categoryId      Int       @map("category_id")
+  title           String
+  amount          Decimal   @db.Decimal(12, 2)
+  transactionDate DateTime  @map("transaction_date")
+  note            String?   @db.Text
+  createdAt       DateTime  @default(now()) @map("created_at")
+  deletedAt       DateTime? @map("deleted_at")
+  user            User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  category        Category  @relation(fields: [categoryId], references: [id])
+
+  @@map("transactions")
+}
+
+model Saving {
+  id            Int      @id @default(autoincrement())
+  userId        String   @map("user_id")
+  projectName   String   @map("project_name")
+  targetAmount  Decimal  @map("target_amount") @db.Decimal(12, 2)
+  currentAmount Decimal  @default(0.00) @map("current_amount") @db.Decimal(12, 2)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@map("savings")
+}
+
+enum TicketStatus {
+  PENDING
+  SUCCESS
+}
+
+model SupportTicket {
+  id          Int          @id @default(autoincrement())
+  userId      String       @map("user_id")
+  subject     String
+  description String       @db.Text
+  status      TicketStatus @default(PENDING)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@map("support_tickets")
+}
