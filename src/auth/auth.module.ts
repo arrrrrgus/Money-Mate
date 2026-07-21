@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AccessTokenService } from './access-token.service';
@@ -7,9 +7,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { HashModule } from '@/infrastructure/hash/hash.module';
 
 @Module({
-  imports: [UserModule, JwtModule, HashModule],
+  imports: [forwardRef(() => UserModule), JwtModule, HashModule],
   controllers: [AuthController],
   providers: [AuthService, AccessTokenService],
-  exports: [AccessTokenService],
+  exports: [AccessTokenService, AuthModule],
 })
 export class AuthModule {}

@@ -1,6 +1,10 @@
 import { PrismaService } from '@/database/prisma.service';
 import { BcryptService } from '@/infrastructure/hash/bcrypt.service';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserCreateInput } from './types/user.type';
 import { User } from '@/database/generated/prisma/client';
 import {
@@ -46,9 +50,18 @@ export class UserService {
   async getUserById(
     id: string,
   ): Promise<UserGetPayload<{ omit: { password: true } }> | null> {
-    return this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id },
       omit: { password: true },
     });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async getProFile(userId: string) {
+    return this.getUserById(userId);
   }
 }
