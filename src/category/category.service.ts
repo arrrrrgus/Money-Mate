@@ -1,7 +1,13 @@
 import { PrismaService } from '@/database/prisma.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { Role } from '@/database/generated/prisma/enums';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -54,5 +60,64 @@ export class CategoryService {
         isSystemCore: true,
       },
     });
+  }
+
+  async update(id: number, userId: string, dto: UpdateCategoryDto) {
+    console.log('DTO DATA :', dto);
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+    });
+    if (!category) {
+      throw new NotFoundException('Not found category');
+    }
+    if (category.isSystemCore) {
+      throw new ForbiddenException('Cannot edit the system main category.');
+    }
+    if (category.createdByUserId !== userId) {
+      throw new ForbiddenException('Not Permission to edit this category');
+    }
+    const existingCategory = await this.prisma.category.findFirst({
+      where: {
+        name: dto.name,
+        type: category?.type,
+        NOT: { id },
+        OR: [{ isSystemCore: true }, { createdByUserId: userId }],
+      },
+    });
+    if (existingCategory) {
+      if (existingCategory.isSystemCore) {
+        throw new BadRequestException(
+          `This name ${dto.name} is reserved for system categories.`,
+        );
+      }
+      throw new BadRequestException(`Category ${dto.name} have already`);
+    }
+    return this.prisma.category.update({
+      where: { id },
+      data: {
+        name: dto.name,
+      },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+      },
+    });
+  }
+
+  async remove(id: number, userId: string) {
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+    });
+    if (!category) {
+      throw new NotFoundException('Not found category');
+    }
+    if (category.createdByUserId !== userId) {
+      throw new ForbiddenException('Not Permission to edit this category');
+    }
+    await this.prisma.category.delete({
+      where: { id },
+    });
+    return { message: 'Category deleted successfully' };
   }
 }

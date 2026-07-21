@@ -1,9 +1,20 @@
 import { AuthGuard } from '@/auth/guards/auth.guard';
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { Role } from '@/database/generated/prisma/enums';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @UseGuards(AuthGuard)
 @Controller('categories')
@@ -22,5 +33,22 @@ export class CategoryController {
     @Body() dto: CreateCategoryDto,
   ) {
     return this.categoryService.create(userId, role, dto);
+  }
+
+  @Patch(':id')
+  async updateCategory(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser('sub') userId: string,
+    @Body() dto: UpdateCategoryDto,
+  ) {
+    return this.categoryService.update(id, userId, dto);
+  }
+
+  @Delete(':id')
+  async deleteCategory(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser('sub') userId: string,
+  ) {
+    return this.categoryService.remove(id, userId);
   }
 }
