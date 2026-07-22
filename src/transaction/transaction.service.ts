@@ -146,24 +146,23 @@ export class TransactionService {
 
   async getSummary(userId: string, filter?: FilterTransactionDto) {
     const whereCondition = this.buildWhereCondition(userId, filter);
-    const transaction = await this.prisma.transaction.findMany({
+    const transactions = await this.prisma.transaction.findMany({
       where: whereCondition,
-      include: {
-        category: true
+      select: {
+        amount: true,
+        category: {
+          select: { type: true }
+        }
       }
     });
-
     let totalIncome = 0;
     let totalExpense = 0;
+    for (const t of transactions) {
+      const amt = Number(t.amount);
+      if (t.category.type === 'INCOME') totalIncome += amt;
+      else if (t.category.type === 'EXPENSE') totalExpense += amt;
+    }
 
-    transaction.forEach((t) => {
-      const amount = Number(t.amount);
-      if (t.category.type === 'INCOME') {
-        totalIncome += amount;
-      } else if (t.category.type === 'EXPENSE') {
-        totalExpense += amount;
-      }
-    });
     return {
       totalIncome,
       totalExpense,

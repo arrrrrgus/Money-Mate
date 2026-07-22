@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
-import { number } from 'zod';
 
 export enum TransactionType {
   INCOME = 'INCOME',
@@ -36,14 +35,14 @@ export class FilterTransactionDto {
   endDate?: Date;
 
   @IsOptional()
-  @Type(() => Date)
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(12)
   month?: number;
 
   @IsOptional()
-  @Type(() => number)
+  @Type(() => Number)
   @IsInt()
   @Min(2000)
   year?: number;

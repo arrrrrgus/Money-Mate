@@ -75,21 +75,23 @@ export class CategoryService {
     if (category.createdByUserId !== userId) {
       throw new ForbiddenException('Not Permission to edit this category');
     }
-    const existingCategory = await this.prisma.category.findFirst({
-      where: {
-        name: dto.name,
-        type: category?.type,
-        NOT: { id },
-        OR: [{ isSystemCore: true }, { createdByUserId: userId }]
+    if (dto.name && dto.name !== category.name) {
+      const existingCategory = await this.prisma.category.findFirst({
+        where: {
+          name: dto.name,
+          type: category?.type,
+          NOT: { id },
+          OR: [{ isSystemCore: true }, { createdByUserId: userId }]
+        }
+      });
+      if (existingCategory) {
+        if (existingCategory.isSystemCore) {
+          throw new BadRequestException(
+            `This name ${dto.name} is reserved for system categories.`
+          );
+        }
+        throw new BadRequestException(`Category ${dto.name} have already`);
       }
-    });
-    if (existingCategory) {
-      if (existingCategory.isSystemCore) {
-        throw new BadRequestException(
-          `This name ${dto.name} is reserved for system categories.`
-        );
-      }
-      throw new BadRequestException(`Category ${dto.name} have already`);
     }
     return this.prisma.category.update({
       where: { id },
@@ -110,6 +112,9 @@ export class CategoryService {
     });
     if (!category) {
       throw new NotFoundException('Not found category');
+    }
+    if (category.isSystemCore) {
+      throw new ForbiddenException('Cannot delete the system main category.');
     }
     if (category.createdByUserId !== userId) {
       throw new ForbiddenException('Not Permission to edit this category');

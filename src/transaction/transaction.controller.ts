@@ -7,8 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Query,
-  UseGuards
+  Query
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
@@ -16,7 +15,6 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { FilterTransactionDto } from './dto/filter-transaction.dto';
 
-@UseGuards()
 @Controller('transactions')
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}

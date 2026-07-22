@@ -1,4 +1,3 @@
-import { AuthGuard } from '@/auth/guards/auth.guard';
 import {
   Body,
   Controller,
@@ -7,8 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Post,
-  UseGuards
+  Post
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
@@ -16,7 +14,6 @@ import { Role } from '@/database/generated/prisma/enums';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
-@UseGuards(AuthGuard)
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
