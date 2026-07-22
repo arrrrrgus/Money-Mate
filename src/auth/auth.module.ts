@@ -10,6 +10,6 @@ import { HashModule } from '@/infrastructure/hash/hash.module';
   imports: [forwardRef(() => UserModule), JwtModule, HashModule],
   controllers: [AuthController],
   providers: [AuthService, AccessTokenService],
-  exports: [AccessTokenService, AuthModule],
+  exports: [AccessTokenService, AuthModule]
 })
 export class AuthModule {}

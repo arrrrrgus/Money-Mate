@@ -5,7 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Post,
+  Post
 } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { MessageResponseDto } from '@/common/dto/message-response.dto';
@@ -22,7 +22,7 @@ export class AuthController {
   @Public()
   @Post('register')
   async register(
-    @Body() registerDto: RegisterDto,
+    @Body() registerDto: RegisterDto
   ): Promise<MessageResponseDto> {
     await this.authService.register(registerDto);
     return { message: 'Registered successfully' };

@@ -3,7 +3,7 @@ import { UserService } from '@/user/user.service';
 import {
   Injectable,
   NotFoundException,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { AccessTokenService } from './access-token.service';
 import { RegisterDto } from './dto/register.dto';
@@ -16,7 +16,7 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly bcryptService: BcryptService,
-    private readonly accessTokenService: AccessTokenService,
+    private readonly accessTokenService: AccessTokenService
   ) {}
 
   async register(dto: RegisterDto): Promise<void> {
@@ -31,7 +31,7 @@ export class AuthService {
 
     const isMatch = await this.bcryptService.compare(
       dto.password,
-      user.password,
+      user.password
     );
     if (!isMatch) {
       throw new UnauthorizedException('Invalid username or email or password');
@@ -41,7 +41,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       username: user.username,
-      role: user.role,
+      role: user.role
     });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...rest } = user;

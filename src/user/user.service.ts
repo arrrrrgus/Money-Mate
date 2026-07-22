@@ -4,13 +4,13 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
 import { UserCreateInput } from './types/user.type';
 import { User } from '@/database/generated/prisma/client';
 import {
   PrismaClientKnownRequestError,
-  UserGetPayload,
+  UserGetPayload
 } from '@/database/generated/prisma/internal/prismaNamespace';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
@@ -18,7 +18,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 export class UserService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly bcryptService: BcryptService,
+    private readonly bcryptService: BcryptService
   ) {}
   async createUser(input: UserCreateInput): Promise<void> {
     const hash = await this.bcryptService.hash(input.password);
@@ -44,17 +44,17 @@ export class UserService {
     return this.prisma.user.findFirst({
       where: {
         OR: [{ email: identifier }, { username: identifier }],
-        deletedAt: null,
-      },
+        deletedAt: null
+      }
     });
   }
 
   async getUserById(
-    id: string,
+    id: string
   ): Promise<UserGetPayload<{ omit: { password: true } }> | null> {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      omit: { password: true },
+      omit: { password: true }
     });
 
     if (!user) {
@@ -69,14 +69,14 @@ export class UserService {
 
   async changePassword(userId: string, dto: ChangePasswordDto) {
     const user = await this.prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId }
     });
     if (!user) {
       throw new NotFoundException('User not found');
     }
     const isPasswordValid = await this.bcryptService.compare(
       dto.oldPassword,
-      user.password,
+      user.password
     );
     if (!isPasswordValid) {
       throw new BadRequestException('The old password is incorrect');
@@ -84,7 +84,7 @@ export class UserService {
     const newHashedPassword = await this.bcryptService.hash(dto.newPassword);
     await this.prisma.user.update({
       where: { id: userId },
-      data: { password: newHashedPassword },
+      data: { password: newHashedPassword }
     });
     return { message: 'Password updated successfully' };
   }
