@@ -7,42 +7,11 @@ import {
 import { CreateSavingDto } from './dto/create-saving.dto';
 import { TopupSavingDto } from './dto/topup-saving.dto';
 import { UpdateSavingDto } from './dto/update-saving.dto';
+import { Saving } from '@/database/generated/prisma/client';
 
 @Injectable()
 export class SavingService {
   constructor(private readonly prismaService: PrismaService) {}
-
-  async getUserSavings(userId: string) {
-    const savings = await this.prismaService.saving.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' }
-    });
-    return savings.map((s) => {
-      const current = Number(s.currentAmount);
-      const target = Number(s.targetAmount);
-      const progressPercentage =
-        target > 0
-          ? Math.min(100, Number(((current / target) * 100).toFixed(2)))
-          : 0;
-      return {
-        ...s,
-        currentAmount: current,
-        targetAmount: target,
-        progressPercentage,
-        isCompleted: current >= target
-      };
-    });
-  }
-
-  async createSaving(userId: string, dto: CreateSavingDto) {
-    return this.prismaService.saving.create({
-      data: {
-        userId,
-        projectName: dto.projectName,
-        targetAmount: dto.targetAmount
-      }
-    });
-  }
 
   private async getSavingAndValidateOwner(userId: string, savingId: number) {
     const saving = await this.prismaService.saving.findUnique({
@@ -60,30 +29,7 @@ export class SavingService {
     return saving;
   }
 
-  async topupSaving(userId: string, savingId: number, dto: TopupSavingDto) {
-    await this.getSavingAndValidateOwner(userId, savingId);
-    const updatedSaving = await this.prismaService.saving.update({
-      where: { id: savingId },
-      data: {
-        currentAmount: {
-          increment: dto.amount
-        }
-      }
-    });
-
-    const current = Number(updatedSaving.currentAmount);
-    const target = Number(updatedSaving.targetAmount);
-
-    return {
-      ...updatedSaving,
-      currentAmount: current,
-      targetAmount: target,
-      isCompleted: current >= target
-    };
-  }
-
-  async getSavingByid(userId: string, savingId: number) {
-    const saving = await this.getSavingAndValidateOwner(userId, savingId);
+  private formatSavingResponse(saving: Saving) {
     const current = Number(saving.currentAmount);
     const target = Number(saving.targetAmount);
     const progressPercentage =
@@ -100,6 +46,43 @@ export class SavingService {
     };
   }
 
+  async getUserSavings(userId: string) {
+    const savings = await this.prismaService.saving.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' }
+    });
+    return savings.map((s) => this.formatSavingResponse(s));
+  }
+
+  async createSaving(userId: string, dto: CreateSavingDto) {
+    return this.prismaService.saving.create({
+      data: {
+        userId,
+        projectName: dto.projectName,
+        targetAmount: dto.targetAmount
+      }
+    });
+  }
+
+  async topupSaving(userId: string, savingId: number, dto: TopupSavingDto) {
+    await this.getSavingAndValidateOwner(userId, savingId);
+
+    const updatedSaving = await this.prismaService.saving.update({
+      where: { id: savingId },
+      data: {
+        currentAmount: {
+          increment: dto.amount
+        }
+      }
+    });
+    return this.formatSavingResponse(updatedSaving);
+  }
+
+  async getSavingById(userId: string, savingId: number) {
+    const saving = await this.getSavingAndValidateOwner(userId, savingId);
+    return this.formatSavingResponse(saving);
+  }
+
   async updateSaving(userId: string, savingId: number, dto: UpdateSavingDto) {
     await this.getSavingAndValidateOwner(userId, savingId);
 
@@ -108,15 +91,7 @@ export class SavingService {
       data: dto
     });
 
-    const current = Number(updatedSaving.currentAmount);
-    const target = Number(updatedSaving.targetAmount);
-
-    return {
-      ...updatedSaving,
-      currentAmount: current,
-      targetAmount: target,
-      isCompleted: current >= target
-    };
+    return this.formatSavingResponse(updatedSaving);
   }
 
   async deleteSaving(userId: string, savingId: number) {

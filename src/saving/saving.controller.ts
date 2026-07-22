@@ -45,7 +45,7 @@ export class SavingController {
     @CurrentUser('sub') userId: string,
     @Param('id', ParseIntPipe) id: number
   ) {
-    return this.savingService.getSavingByid(userId, id);
+    return this.savingService.getSavingById(userId, id);
   }
 
   @Patch(':id')
