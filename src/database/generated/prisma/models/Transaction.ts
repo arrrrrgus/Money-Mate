@@ -326,7 +326,7 @@ export type TransactionScalarWhereWithAggregatesInput = {
 export type TransactionCreateInput = {
   title: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  transactionDate: Date | string
+  transactionDate?: Date | string
   note?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
@@ -340,7 +340,7 @@ export type TransactionUncheckedCreateInput = {
   categoryId: number
   title: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  transactionDate: Date | string
+  transactionDate?: Date | string
   note?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
@@ -375,7 +375,7 @@ export type TransactionCreateManyInput = {
   categoryId: number
   title: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  transactionDate: Date | string
+  transactionDate?: Date | string
   note?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
@@ -555,7 +555,7 @@ export type DecimalFieldUpdateOperationsInput = {
 export type TransactionCreateWithoutUserInput = {
   title: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  transactionDate: Date | string
+  transactionDate?: Date | string
   note?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
@@ -567,7 +567,7 @@ export type TransactionUncheckedCreateWithoutUserInput = {
   categoryId: number
   title: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  transactionDate: Date | string
+  transactionDate?: Date | string
   note?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
@@ -617,7 +617,7 @@ export type TransactionScalarWhereInput = {
 export type TransactionCreateWithoutCategoryInput = {
   title: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  transactionDate: Date | string
+  transactionDate?: Date | string
   note?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
@@ -629,7 +629,7 @@ export type TransactionUncheckedCreateWithoutCategoryInput = {
   userId: string
   title: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  transactionDate: Date | string
+  transactionDate?: Date | string
   note?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
@@ -666,7 +666,7 @@ export type TransactionCreateManyUserInput = {
   categoryId: number
   title: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  transactionDate: Date | string
+  transactionDate?: Date | string
   note?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
@@ -709,7 +709,7 @@ export type TransactionCreateManyCategoryInput = {
   userId: string
   title: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
-  transactionDate: Date | string
+  transactionDate?: Date | string
   note?: string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null

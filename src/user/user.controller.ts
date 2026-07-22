@@ -17,7 +17,7 @@ export class UserController {
   @Patch('me/password')
   async changePassword(
     @CurrentUser('sub') userId: string,
-    @Body() dto: ChangePasswordDto,
+    @Body() dto: ChangePasswordDto
   ) {
     return this.userService.changePassword(userId, dto);
   }
