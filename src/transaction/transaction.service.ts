@@ -40,6 +40,11 @@ export class TransactionService {
           gte: new Date(currentYear, filter.month - 1, 1),
           lt: new Date(currentYear, filter.month, 1)
         };
+      } else {
+        whereCondition.transactionDate = {
+          gte: new Date(currentYear, 0, 1),
+          lt: new Date(currentYear + 1, 0, 1)
+        };
       }
     }
     return whereCondition;
