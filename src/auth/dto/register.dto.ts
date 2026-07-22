@@ -4,7 +4,7 @@ import {
   IsNotEmpty,
   IsString,
   Length,
-  MinLength,
+  MinLength
 } from 'class-validator';
 
 export class RegisterDto {

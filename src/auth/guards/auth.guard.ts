@@ -3,7 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AccessTokenService } from '../access-token.service';
@@ -15,13 +15,13 @@ import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly accessTokenService: AccessTokenService,
-    private readonly reflector: Reflector,
+    private readonly reflector: Reflector
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
-      context.getClass(),
+      context.getClass()
     ]);
     // console.log('isPublic', isPublic);
     if (isPublic) {

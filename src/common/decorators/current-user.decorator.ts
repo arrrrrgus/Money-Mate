@@ -2,7 +2,7 @@ import { AccessTokenPayload } from '@/auth/types/jwt.payload';
 import {
   createParamDecorator,
   ExecutionContext,
-  InternalServerErrorException,
+  InternalServerErrorException
 } from '@nestjs/common';
 import { Request } from 'express';
 
@@ -12,10 +12,10 @@ export const CurrentUser = createParamDecorator(
     const user = request.user;
     if (!user) {
       throw new InternalServerErrorException(
-        'CurrentUser decorator must be use within AuthGuard',
+        'CurrentUser decorator must be use within AuthGuard'
       );
     }
 
     return data ? user[data] : user;
-  },
+  }
 );

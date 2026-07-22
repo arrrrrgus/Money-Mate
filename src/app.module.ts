@@ -8,6 +8,7 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { CategoryModule } from './category/category.module';
 import { validate } from './config/env.validation';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { validate } from './config/env.validation';
     UserModule,
     DatabaseModule,
     CategoryModule,
+    TransactionModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: AuthGuard }, UserService],
 })
