@@ -17,8 +17,8 @@ import { TransactionModule } from './transaction/transaction.module';
     UserModule,
     DatabaseModule,
     CategoryModule,
-    TransactionModule,
+    TransactionModule
   ],
-  providers: [{ provide: APP_GUARD, useClass: AuthGuard }, UserService],
+  providers: [{ provide: APP_GUARD, useClass: AuthGuard }, UserService]
 })
 export class AppModule {}

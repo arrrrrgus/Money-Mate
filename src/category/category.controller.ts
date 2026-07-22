@@ -8,7 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
@@ -30,7 +30,7 @@ export class CategoryController {
   async createCategory(
     @CurrentUser('sub') userId: string,
     @CurrentUser('role') role: Role,
-    @Body() dto: CreateCategoryDto,
+    @Body() dto: CreateCategoryDto
   ) {
     return this.categoryService.create(userId, role, dto);
   }
@@ -39,7 +39,7 @@ export class CategoryController {
   async updateCategory(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser('sub') userId: string,
-    @Body() dto: UpdateCategoryDto,
+    @Body() dto: UpdateCategoryDto
   ) {
     return this.categoryService.update(id, userId, dto);
   }
@@ -47,7 +47,7 @@ export class CategoryController {
   @Delete(':id')
   async deleteCategory(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser('sub') userId: string,
+    @CurrentUser('sub') userId: string
   ) {
     return this.categoryService.remove(id, userId);
   }

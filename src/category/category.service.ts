@@ -3,7 +3,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { Role } from '@/database/generated/prisma/enums';
@@ -16,14 +16,14 @@ export class CategoryService {
   async findAllByUser(userId: string) {
     return this.prisma.category.findMany({
       where: {
-        OR: [{ isSystemCore: true }, { createdByUserId: userId }],
+        OR: [{ isSystemCore: true }, { createdByUserId: userId }]
       },
       select: {
         id: true,
         name: true,
-        type: true,
+        type: true
       },
-      orderBy: { id: 'asc' },
+      orderBy: { id: 'asc' }
     });
   }
 
@@ -34,13 +34,13 @@ export class CategoryService {
       where: {
         name: dto.name,
         type: dto.type,
-        OR: [{ isSystemCore: true }, { createdByUserId: userId }],
-      },
+        OR: [{ isSystemCore: true }, { createdByUserId: userId }]
+      }
     });
     if (existingCategory) {
       if (existingCategory.isSystemCore) {
         throw new BadRequestException(
-          `This name ${dto.name} is reserved for system categories.`,
+          `This name ${dto.name} is reserved for system categories.`
         );
       }
       throw new BadRequestException(`Category ${dto.name} have already`);
@@ -51,21 +51,21 @@ export class CategoryService {
         name: dto.name,
         type: dto.type,
         createdByUserId: userId,
-        isSystemCore: isAdmin,
+        isSystemCore: isAdmin
       },
       select: {
         id: true,
         name: true,
         type: true,
-        isSystemCore: true,
-      },
+        isSystemCore: true
+      }
     });
   }
 
   async update(id: number, userId: string, dto: UpdateCategoryDto) {
     console.log('DTO DATA :', dto);
     const category = await this.prisma.category.findUnique({
-      where: { id },
+      where: { id }
     });
     if (!category) {
       throw new NotFoundException('Not found category');
@@ -81,13 +81,13 @@ export class CategoryService {
         name: dto.name,
         type: category?.type,
         NOT: { id },
-        OR: [{ isSystemCore: true }, { createdByUserId: userId }],
-      },
+        OR: [{ isSystemCore: true }, { createdByUserId: userId }]
+      }
     });
     if (existingCategory) {
       if (existingCategory.isSystemCore) {
         throw new BadRequestException(
-          `This name ${dto.name} is reserved for system categories.`,
+          `This name ${dto.name} is reserved for system categories.`
         );
       }
       throw new BadRequestException(`Category ${dto.name} have already`);
@@ -95,19 +95,19 @@ export class CategoryService {
     return this.prisma.category.update({
       where: { id },
       data: {
-        name: dto.name,
+        name: dto.name
       },
       select: {
         id: true,
         name: true,
-        type: true,
-      },
+        type: true
+      }
     });
   }
 
   async remove(id: number, userId: string) {
     const category = await this.prisma.category.findUnique({
-      where: { id },
+      where: { id }
     });
     if (!category) {
       throw new NotFoundException('Not found category');
@@ -116,7 +116,7 @@ export class CategoryService {
       throw new ForbiddenException('Not Permission to edit this category');
     }
     await this.prisma.category.delete({
-      where: { id },
+      where: { id }
     });
     return { message: 'Category deleted successfully' };
   }

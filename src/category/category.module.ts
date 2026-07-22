@@ -7,6 +7,6 @@ import { AuthModule } from '@/auth/auth.module';
   imports: [AuthModule],
   providers: [CategoryService],
   controllers: [CategoryController],
-  exports: [CategoryService],
+  exports: [CategoryService]
 })
 export class CategoryModule {}

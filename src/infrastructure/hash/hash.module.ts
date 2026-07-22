@@ -4,6 +4,6 @@ import { BcryptService } from './bcrypt.service';
 @Global()
 @Module({
   providers: [BcryptService],
-  exports: [BcryptService],
+  exports: [BcryptService]
 })
 export class HashModule {}

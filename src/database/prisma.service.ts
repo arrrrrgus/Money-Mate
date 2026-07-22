@@ -7,10 +7,10 @@ import { PrismaPg } from '@prisma/adapter-pg';
 @Injectable()
 export class PrismaService extends PrismaClient {
   constructor(
-    private readonly configService: ConfigService<EnvVariable, true>,
+    private readonly configService: ConfigService<EnvVariable, true>
   ) {
     const adapter = new PrismaPg({
-      connectionString: configService.get('DATABASE_URL', { infer: true }),
+      connectionString: configService.get('DATABASE_URL', { infer: true })
     });
     super({ adapter });
   }
