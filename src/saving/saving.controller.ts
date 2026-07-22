@@ -14,7 +14,7 @@ import { CreateSavingDto } from './dto/create-saving.dto';
 import { TopupSavingDto } from './dto/topup-saving.dto';
 import { UpdateSavingDto } from './dto/update-saving.dto';
 
-@Controller('saving')
+@Controller('savings')
 export class SavingController {
   constructor(private readonly savingService: SavingService) {}
 

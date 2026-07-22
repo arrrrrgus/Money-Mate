@@ -43,7 +43,7 @@ export class CategoryService {
           `This name ${dto.name} is reserved for system categories.`
         );
       }
-      throw new BadRequestException(`Category ${dto.name} have already`);
+      throw new BadRequestException(`Category ${dto.name} already exists`);
     }
 
     return this.prisma.category.create({
@@ -63,7 +63,6 @@ export class CategoryService {
   }
 
   async update(id: number, userId: string, dto: UpdateCategoryDto) {
-    console.log('DTO DATA :', dto);
     const category = await this.prisma.category.findUnique({
       where: { id }
     });

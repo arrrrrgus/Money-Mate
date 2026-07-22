@@ -55,13 +55,14 @@ export class SavingService {
   }
 
   async createSaving(userId: string, dto: CreateSavingDto) {
-    return this.prismaService.saving.create({
+    const saving = await this.prismaService.saving.create({
       data: {
         userId,
         projectName: dto.projectName,
         targetAmount: dto.targetAmount
       }
     });
+    return this.formatSavingResponse(saving);
   }
 
   async topupSaving(userId: string, savingId: number, dto: TopupSavingDto) {

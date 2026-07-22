@@ -11,7 +11,7 @@ export class UserController {
 
   @Get('profile')
   async getProfile(@CurrentUser('sub') userId: string) {
-    return this.userService.getProFile(userId);
+    return this.userService.getProfile(userId);
   }
 
   @Patch('me/password')

@@ -63,7 +63,7 @@ export class UserService {
     return user;
   }
 
-  async getProFile(userId: string) {
+  async getProfile(userId: string) {
     return this.getUserById(userId);
   }
 
