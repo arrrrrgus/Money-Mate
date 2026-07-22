@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CategoryModule } from './category/category.module';
 import { validate } from './config/env.validation';
 import { TransactionModule } from './transaction/transaction.module';
+import { SavingModule } from './saving/saving.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { TransactionModule } from './transaction/transaction.module';
     UserModule,
     DatabaseModule,
     CategoryModule,
-    TransactionModule
+    TransactionModule,
+    SavingModule
   ],
   providers: [{ provide: APP_GUARD, useClass: AuthGuard }, UserService]
 })
