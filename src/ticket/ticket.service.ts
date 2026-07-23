@@ -17,4 +17,18 @@ export class TicketService {
       }
     });
   }
+
+  async getUserTickets(userId: string) {
+    return this.prismaService.supportTicket.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        subject: true,
+        description: true,
+        status: true,
+        createdAt: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
 }

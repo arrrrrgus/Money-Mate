@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -13,5 +13,10 @@ export class TicketController {
     @Body() dto: CreateTicketDto
   ) {
     return this.ticketService.createTicket(userId, dto);
+  }
+
+  @Get()
+  async getUserTickets(@CurrentUser('sub') userId: string) {
+    return this.ticketService.getUserTickets(userId);
   }
 }
