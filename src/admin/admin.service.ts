@@ -1,3 +1,4 @@
+import { TicketStatus } from '@/database/generated/prisma/enums';
 import { PrismaService } from '@/database/prisma.service';
 import { Injectable } from '@nestjs/common';
 
@@ -26,8 +27,6 @@ export class AdminService {
           id: true,
           username: true,
           email: true,
-          firstName: true,
-          lastName: true,
           role: true,
           createdAt: true
         },
@@ -47,16 +46,36 @@ export class AdminService {
   }
 
   async getCategories() {
-    const [categories, totalCategories] = await Promise.all([
-      this.prismaService.category.findMany({
-        where: { isSystemCore: true },
-        orderBy: { name: 'asc' }
-      }),
-      this.prismaService.category.count()
-    ]);
+    return this.prismaService.category.findMany({
+      where: { isSystemCore: true },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        isSystemCore: true
+      },
+      orderBy: { id: 'asc' }
+    });
+  }
+
+  async getStatusOverview() {
+    const [totalUserscount, totalTicketsPending, totalSystemCategories] =
+      await Promise.all([
+        this.prismaService.user.count({
+          where: { deletedAt: null }
+        }),
+        this.prismaService.supportTicket.count({
+          where: { status: TicketStatus.PENDING }
+        }),
+        this.prismaService.category.count({
+          where: { isSystemCore: true }
+        })
+      ]);
     return {
-      systemCategories: categories,
-      totalCategoriesCount: totalCategories
+      totalUsers: totalUserscount,
+      activeUsers: totalUserscount,
+      totalTicketsPending,
+      totalSystemCategories
     };
   }
 }

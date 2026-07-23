@@ -85,4 +85,9 @@ export class AdminController {
   ) {
     return this.categoryService.remove(id, userId, Role.ADMIN);
   }
+
+  @Get('stats/overview')
+  async getStatsOverview() {
+    return this.adminService.getStatusOverview();
+  }
 }
