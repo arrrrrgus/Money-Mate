@@ -36,16 +36,18 @@ export class CategoryController {
   async updateCategory(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser('sub') userId: string,
+    @CurrentUser('role') role: Role,
     @Body() dto: UpdateCategoryDto
   ) {
-    return this.categoryService.update(id, userId, dto);
+    return this.categoryService.update(id, userId, role, dto);
   }
 
   @Delete(':id')
   async deleteCategory(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser('sub') userId: string
+    @CurrentUser('sub') userId: string,
+    @CurrentUser('role') role: Role
   ) {
-    return this.categoryService.remove(id, userId);
+    return this.categoryService.remove(id, userId, role);
   }
 }

@@ -62,17 +62,19 @@ export class CategoryService {
     });
   }
 
-  async update(id: number, userId: string, dto: UpdateCategoryDto) {
+  async update(id: number, userId: string, role: Role, dto: UpdateCategoryDto) {
     const category = await this.prisma.category.findUnique({
       where: { id }
     });
     if (!category) {
       throw new NotFoundException('Not found category');
     }
-    if (category.isSystemCore) {
+
+    const isAdmin = role === Role.ADMIN;
+    if (category.isSystemCore && !isAdmin) {
       throw new ForbiddenException('Cannot edit the system main category.');
     }
-    if (category.createdByUserId !== userId) {
+    if (!isAdmin && category.createdByUserId !== userId) {
       throw new ForbiddenException('Not Permission to edit this category');
     }
     if (dto.name && dto.name !== category.name) {
@@ -106,17 +108,20 @@ export class CategoryService {
     });
   }
 
-  async remove(id: number, userId: string) {
+  async remove(id: number, userId: string, role: Role) {
     const category = await this.prisma.category.findUnique({
       where: { id }
     });
     if (!category) {
       throw new NotFoundException('Not found category');
     }
-    if (category.isSystemCore) {
+
+    const isAdmin = role === Role.ADMIN;
+
+    if (category.isSystemCore && !isAdmin) {
       throw new ForbiddenException('Cannot delete the system main category.');
     }
-    if (category.createdByUserId !== userId) {
+    if (!isAdmin && category.createdByUserId !== userId) {
       throw new ForbiddenException('Not Permission to edit this category');
     }
     await this.prisma.category.delete({

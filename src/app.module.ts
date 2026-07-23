@@ -10,6 +10,7 @@ import { validate } from './config/env.validation';
 import { TransactionModule } from './transaction/transaction.module';
 import { SavingModule } from './saving/saving.module';
 import { TicketModule } from './ticket/ticket.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { TicketModule } from './ticket/ticket.module';
     CategoryModule,
     TransactionModule,
     SavingModule,
-    TicketModule
+    TicketModule,
+    AdminModule
   ],
   providers: [{ provide: APP_GUARD, useClass: AuthGuard }]
 })
