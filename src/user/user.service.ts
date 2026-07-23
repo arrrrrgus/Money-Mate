@@ -53,7 +53,7 @@ export class UserService {
     id: string
   ): Promise<UserGetPayload<{ omit: { password: true } }> | null> {
     const user = await this.prisma.user.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       omit: { password: true }
     });
 
@@ -68,8 +68,13 @@ export class UserService {
   }
 
   async changePassword(userId: string, dto: ChangePasswordDto) {
+    if (dto.oldPassword === dto.newPassword) {
+      throw new BadRequestException(
+        'New password must be different from old password'
+      );
+    }
     const user = await this.prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId, deletedAt: null }
     });
     if (!user) {
       throw new NotFoundException('User not found');

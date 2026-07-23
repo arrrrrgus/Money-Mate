@@ -98,8 +98,9 @@ export class SavingService {
   async deleteSaving(userId: string, savingId: number) {
     await this.getSavingAndValidateOwner(userId, savingId);
 
-    return this.prismaService.saving.delete({
+    await this.prismaService.saving.delete({
       where: { id: savingId }
     });
+    return { message: 'Saving goal deleted successfully' };
   }
 }
