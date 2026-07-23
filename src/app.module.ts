@@ -9,6 +9,7 @@ import { CategoryModule } from './category/category.module';
 import { validate } from './config/env.validation';
 import { TransactionModule } from './transaction/transaction.module';
 import { SavingModule } from './saving/saving.module';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { SavingModule } from './saving/saving.module';
     DatabaseModule,
     CategoryModule,
     TransactionModule,
-    SavingModule
+    SavingModule,
+    TicketModule
   ],
   providers: [{ provide: APP_GUARD, useClass: AuthGuard }]
 })
