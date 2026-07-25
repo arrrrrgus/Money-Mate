@@ -47,6 +47,7 @@ model Category {
   name            String
   type            Type
   createdAt       DateTime      @default(now()) @map("created_at")
+  deletedAt       DateTime?     @map("deleted_at")
   isSystemCore    Boolean       @default(false) @map("is_system_core")
   createdByUserId String?       @map("created_by_user_id")
   createdByUser   User?         @relation("UserCategories", fields: [createdByUserId], references: [id], onDelete: Restrict)

@@ -838,6 +838,7 @@ export const CategoryScalarFieldEnum = {
   name: 'name',
   type: 'type',
   createdAt: 'createdAt',
+  deletedAt: 'deletedAt',
   isSystemCore: 'isSystemCore',
   createdByUserId: 'createdByUserId'
 } as const

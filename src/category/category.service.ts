@@ -16,6 +16,7 @@ export class CategoryService {
   async findAllByUser(userId: string) {
     return this.prisma.category.findMany({
       where: {
+        deletedAt: null,
         OR: [{ isSystemCore: true }, { createdByUserId: userId }]
       },
       select: {
@@ -34,6 +35,7 @@ export class CategoryService {
       where: {
         name: dto.name,
         type: dto.type,
+        deletedAt: null,
         OR: [{ isSystemCore: true }, { createdByUserId: userId }]
       }
     });
@@ -64,7 +66,7 @@ export class CategoryService {
 
   async update(id: number, userId: string, role: Role, dto: UpdateCategoryDto) {
     const category = await this.prisma.category.findUnique({
-      where: { id }
+      where: { id, deletedAt: null }
     });
     if (!category) {
       throw new NotFoundException('Not found category');
@@ -82,6 +84,7 @@ export class CategoryService {
         where: {
           name: dto.name,
           type: category?.type,
+          deletedAt: null,
           NOT: { id },
           OR: [{ isSystemCore: true }, { createdByUserId: userId }]
         }
@@ -109,8 +112,8 @@ export class CategoryService {
   }
 
   async remove(id: number, userId: string, role: Role) {
-    const category = await this.prisma.category.findUnique({
-      where: { id }
+    const category = await this.prisma.category.findFirst({
+      where: { id, deletedAt: null }
     });
     if (!category) {
       throw new NotFoundException('Not found category');
@@ -124,8 +127,9 @@ export class CategoryService {
     if (!isAdmin && category.createdByUserId !== userId) {
       throw new ForbiddenException('Not Permission to edit this category');
     }
-    await this.prisma.category.delete({
-      where: { id }
+    await this.prisma.category.update({
+      where: { id },
+      data: { deletedAt: new Date() }
     });
     return { message: 'Category deleted successfully' };
   }
