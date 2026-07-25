@@ -8,10 +8,7 @@ import {
 } from '@nestjs/common';
 import { UserCreateInput } from './types/user.type';
 import { User } from '@/database/generated/prisma/client';
-import {
-  PrismaClientKnownRequestError,
-  UserGetPayload
-} from '@/database/generated/prisma/internal/prismaNamespace';
+import { UserGetPayload } from '@/database/generated/prisma/internal/prismaNamespace';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
@@ -21,23 +18,21 @@ export class UserService {
     private readonly bcryptService: BcryptService
   ) {}
   async createUser(input: UserCreateInput): Promise<void> {
-    const hash = await this.bcryptService.hash(input.password);
-
-    try {
-      await this.prisma.user.create({ data: { ...input, password: hash } });
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          const target = error.meta?.target as string[] | undefined;
-          if (target?.includes('username'))
-            throw new ConflictException('Username already exists');
-          if (target?.includes('email'))
-            throw new ConflictException('Email already exists');
-          throw new ConflictException('Identity data already exists');
-        }
-      }
-      throw error;
+    const existingUsername = await this.prisma.user.findFirst({
+      where: { username: input.username, deletedAt: null }
+    });
+    if (existingUsername) {
+      throw new ConflictException('Username already exists');
     }
+    const existingEmail = await this.prisma.user.findFirst({
+      where: { email: input.email, deletedAt: null }
+    });
+    if (existingEmail) {
+      throw new ConflictException('Email already exists');
+    }
+
+    const hash = await this.bcryptService.hash(input.password);
+    await this.prisma.user.create({ data: { ...input, password: hash } });
   }
 
   async getUserByIdentifier(identifier: string): Promise<User | null> {

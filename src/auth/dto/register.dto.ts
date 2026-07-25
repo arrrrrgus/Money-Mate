@@ -1,3 +1,4 @@
+import { Trim } from '@/common/decorators/trim.decorator';
 import {
   IsAlphanumeric,
   IsEmail,
@@ -10,7 +11,8 @@ import {
 export class RegisterDto {
   @IsString()
   @IsNotEmpty()
-  @Length(4, 20)
+  @Length(6, 20)
+  @Trim()
   username: string;
 
   @IsEmail()
@@ -25,9 +27,11 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
+  @Trim()
   firstName: string;
 
   @IsString()
   @IsNotEmpty()
+  @Trim()
   lastName: string;
 }
