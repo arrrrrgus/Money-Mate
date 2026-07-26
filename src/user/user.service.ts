@@ -10,6 +10,7 @@ import { UserCreateInput } from './types/user.type';
 import { User } from '@/database/generated/prisma/client';
 import { UserGetPayload } from '@/database/generated/prisma/internal/prismaNamespace';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -87,5 +88,49 @@ export class UserService {
       data: { password: newHashedPassword }
     });
     return { message: 'Password updated successfully' };
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId, deletedAt: null }
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (dto.username && dto.username !== user.username) {
+      const existingUsername = await this.prisma.user.findFirst({
+        where: { username: dto.username, id: userId, deletedAt: null }
+      });
+      if (existingUsername) {
+        throw new ConflictException('Username already exists');
+      }
+    }
+    if (dto.email && dto.email !== user.email) {
+      const existingEmail = await this.prisma.user.findFirst({
+        where: {
+          email: dto.email,
+          id: { not: userId },
+          deletedAt: null
+        }
+      });
+      if (existingEmail) {
+        throw new ConflictException('Email already exists');
+      }
+    }
+    const updateUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(dto.username && { username: dto.username }),
+        ...(dto.email && { email: dto.email }),
+        ...(dto.firstName && { firstName: dto.firstName }),
+        ...(dto.lastName && { lastName: dto.lastName })
+      },
+      omit: { password: true }
+    });
+    return {
+      message: 'Profile updated successfully',
+      data: updateUser
+    };
   }
 }
