@@ -53,7 +53,8 @@ export class AdminService {
         id: true,
         name: true,
         type: true,
-        isSystemCore: true
+        isSystemCore: true,
+        deletedAt: true
       },
       orderBy: { id: 'asc' }
     });

@@ -125,7 +125,7 @@ export class CategoryService {
 
   async remove(id: number, userId: string, role: Role) {
     const category = await this.prisma.category.findFirst({
-      where: { id, deletedAt: null }
+      where: { id }
     });
     if (!category) {
       throw new NotFoundException('Not found category');
@@ -139,10 +139,16 @@ export class CategoryService {
     if (!isAdmin && category.createdByUserId !== userId) {
       throw new ForbiddenException('Not Permission to edit this category');
     }
+
+    const isCurrentlyDeleted = category.deletedAt !== null;
     await this.prisma.category.update({
       where: { id },
-      data: { deletedAt: new Date() }
+      data: { deletedAt: isCurrentlyDeleted ? null : new Date() }
     });
-    return { message: 'Category deleted successfully' };
+    return {
+      message: isCurrentlyDeleted
+        ? 'เปิดใช้งานหมวดหมู่เรียบร้อย'
+        : 'ปิดใช้งานหมวดหมู่เรียบร้อย'
+    };
   }
 }

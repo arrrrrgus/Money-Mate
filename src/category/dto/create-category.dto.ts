@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString
+} from 'class-validator';
 import { Type } from '@/database/generated/prisma/enums';
 
 export class CreateCategoryDto {
@@ -9,4 +15,8 @@ export class CreateCategoryDto {
   @IsEnum(Type)
   @IsNotEmpty()
   type: Type;
+
+  @IsBoolean()
+  @IsOptional()
+  isSystemCore?: boolean;
 }
