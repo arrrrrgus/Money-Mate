@@ -3,7 +3,7 @@ import { TicketService } from './ticket.service';
 import { CurrentUser } from '@/common/decorators/current-user.decorator';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 
-@Controller('ticket')
+@Controller('tickets')
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 

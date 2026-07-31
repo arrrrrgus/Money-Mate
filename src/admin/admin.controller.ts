@@ -90,4 +90,9 @@ export class AdminController {
   async getStatsOverview() {
     return this.adminService.getStatusOverview();
   }
+
+  @Patch('users/:id/status')
+  async toggleUserStatus(@Param('id') id: string) {
+    return this.adminService.toggleUserStatus(id);
+  }
 }

@@ -22,7 +22,19 @@ export class CategoryService {
       select: {
         id: true,
         name: true,
-        type: true
+        type: true,
+        isSystemCore: true,
+        createdByUserId: true,
+        _count: {
+          select: {
+            transactions: {
+              where: {
+                userId: userId,
+                deletedAt: null
+              }
+            }
+          }
+        }
       },
       orderBy: { id: 'asc' }
     });

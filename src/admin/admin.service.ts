@@ -1,6 +1,6 @@
-import { TicketStatus } from '@/database/generated/prisma/enums';
+import { Role, TicketStatus } from '@/database/generated/prisma/enums';
 import { PrismaService } from '@/database/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class AdminService {
@@ -10,7 +10,7 @@ export class AdminService {
     const skip = (page - 1) * limit;
 
     const where = {
-      deletedAt: null,
+      role: Role.USER,
       ...(search
         ? {
             OR: [
@@ -28,7 +28,8 @@ export class AdminService {
           username: true,
           email: true,
           role: true,
-          createdAt: true
+          createdAt: true,
+          deletedAt: true
         },
         skip,
         take: limit,
@@ -76,6 +77,30 @@ export class AdminService {
       activeUsers: totalUserscount,
       totalTicketsPending,
       totalSystemCategories
+    };
+  }
+
+  async toggleUserStatus(userid: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userid }
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const updateUser = await this.prismaService.user.update({
+      where: { id: userid },
+      data: {
+        deletedAt: user.deletedAt ? null : new Date()
+      },
+      select: { id: true, username: true, email: true, deletedAt: true }
+    });
+
+    return {
+      message: updateUser.deletedAt
+        ? 'ปิดใช้งานผู้ใช้สำเร็จ'
+        : 'เปิดใช้งานผู้ใช้เรียบร้อย',
+      user: updateUser
     };
   }
 }
